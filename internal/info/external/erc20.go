@@ -3,8 +3,6 @@ package external
 import (
 	"fmt"
 	"strconv"
-
-	"github.com/trustwallet/assets-go-libs/http"
 )
 
 const ethAPIURL = "https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey"
@@ -18,7 +16,7 @@ func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
 	url := fmt.Sprintf(ethAPIURL, tokenID)
 
 	var result TokenInfoERC20
-	err := http.GetHTTPResponse(url, &result)
+	err := getHTTPResponse(url, &result)
 	if err != nil {
 		return nil, err
 	}

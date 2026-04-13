@@ -2,8 +2,6 @@ package external
 
 import (
 	"fmt"
-
-	"github.com/trustwallet/assets-go-libs/http"
 )
 
 const splAPIURL = "https://public-api.solscan.io/token/holders?tokenAddress=%s"
@@ -21,7 +19,7 @@ func GetTokenInfoForSPL(tokenID string) (*TokenInfo, error) {
 	url := fmt.Sprintf(splAPIURL, tokenID)
 
 	var result TokenInfoSPL
-	err := http.GetHTTPResponse(url, &result)
+	err := getHTTPResponse(url, &result)
 	if err != nil {
 		return nil, err
 	}
