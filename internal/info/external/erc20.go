@@ -3,7 +3,10 @@ package external
 import (
 	"fmt"
 	"net/url"
+ copilot/fix-security-issues
 	"os"
+
+ master
 	"strconv"
 )
 
@@ -19,23 +22,38 @@ func ethplorerAPIKey() string {
 	return "freekey"
 }
 
+// maxTokenDecimals is the maximum number of decimal places a valid token can have.
+const maxTokenDecimals = 30
+
 type TokenInfoERC20 struct {
 	Decimals     string `json:"decimals"`
 	HoldersCount int    `json:"holdersCount"`
 }
 
 func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
+ copilot/fix-security-issues
 	apiURL := fmt.Sprintf("https://api.ethplorer.io/getTokenInfo/%s?apiKey=%s",
 		url.PathEscape(tokenID), url.QueryEscape(ethplorerAPIKey()))
 
 	var result TokenInfoERC20
 	if err := getJSON(apiURL, &result); err != nil {
+
+	apiURL := fmt.Sprintf(ethAPIURL, url.PathEscape(tokenID))
+
+	var result TokenInfoERC20
+	err := http.GetHTTPResponse(apiURL, &result)
+	if err != nil {
+ master
 		return nil, err
 	}
 
 	decimals, err := strconv.Atoi(result.Decimals)
 	if err != nil {
 		return nil, err
+	}
+
+	if decimals < 0 || decimals > maxTokenDecimals {
+		return nil, fmt.Errorf("decimals value out of valid range: %d", decimals)
 	}
 
 	return &TokenInfo{
