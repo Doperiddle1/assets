@@ -3,6 +3,7 @@ package external
 import (
 	"errors"
 	"fmt"
+	"net/url"
 
 	"github.com/trustwallet/assets-go-libs/http"
 )
@@ -18,10 +19,10 @@ type TRC10TokensResponse struct {
 }
 
 func GetTokenInfoForTRC10(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(trc10APIURL, tokenID)
+	apiURL := fmt.Sprintf(trc10APIURL, url.QueryEscape(tokenID))
 
 	var res TRC10TokensResponse
-	err := http.GetHTTPResponse(url, &res)
+	err := http.GetHTTPResponse(apiURL, &res)
 	if err != nil {
 		return nil, err
 	}

@@ -2,6 +2,7 @@ package external
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -26,13 +27,13 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 	case "erc20":
 		return GetTokenInfoForERC20(tokenID)
 	case "bep20":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", url.PathEscape(tokenID)))
 	case "fantom":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", url.PathEscape(tokenID)))
 	case "polygon":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", url.PathEscape(tokenID)))
 	case "avalanche":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", url.PathEscape(tokenID)))
 	case "spl":
 		return GetTokenInfoForSPL(tokenID)
 	case "trc20":

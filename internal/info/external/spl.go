@@ -2,6 +2,7 @@ package external
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/trustwallet/assets-go-libs/http"
 )
@@ -18,10 +19,10 @@ type Data struct {
 }
 
 func GetTokenInfoForSPL(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(splAPIURL, tokenID)
+	apiURL := fmt.Sprintf(splAPIURL, url.QueryEscape(tokenID))
 
 	var result TokenInfoSPL
-	err := http.GetHTTPResponse(url, &result)
+	err := http.GetHTTPResponse(apiURL, &result)
 	if err != nil {
 		return nil, err
 	}
