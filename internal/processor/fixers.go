@@ -56,7 +56,7 @@ func (s *Service) FixETHAddressChecksum(f *file.AssetFile) error {
 
 		log.WithField("from", assetDir).
 			WithField("to", checksum).
-			Debug("Renamed asset")
+			Info("Renamed asset to correct checksum")
 	}
 
 	return nil
