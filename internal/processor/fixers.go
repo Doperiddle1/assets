@@ -27,7 +27,12 @@ func (s *Service) FixETHAddressChecksum(f *file.AssetFile) error {
 		return nil
 	}
 
-	assetDir := filepath.Base(f.Path())
+	cleanPath := filepath.Clean(f.Path())
+	if cleanPath != f.Path() {
+		return fmt.Errorf("unsafe path detected: %s", f.Path())
+	}
+
+	assetDir := filepath.Base(cleanPath)
 
 	err := validation.ValidateETHForkAddress(f.Chain(), assetDir)
 	if err != nil {
@@ -38,16 +43,13 @@ func (s *Service) FixETHAddressChecksum(f *file.AssetFile) error {
 
 		newName := path.GetAssetPath(f.Chain().Handle, checksum)
 
-		log.WithField("from", assetDir).
-			WithField("to", checksum).
-			Debug("Renaming asset to correct checksum")
-
-		if e = os.Rename(f.Path(), newName); e != nil {
-			return fmt.Errorf("failed to rename dir from %s to %s: %s", f.Path(), newName, e)
+		// Ensure the rename target stays within the same parent directory.
+		if filepath.Dir(filepath.Clean(newName)) != filepath.Dir(cleanPath) {
+			return fmt.Errorf("unsafe rename target: %s", newName)
 		}
 
-		if _, e = os.Stat(newName); e != nil {
-			return fmt.Errorf("rename appeared to succeed but destination %s not found: %s", newName, e)
+		if e = os.Rename(cleanPath, newName); e != nil {
+			return fmt.Errorf("failed to rename dir: %s", e)
 		}
 
 		s.fileService.UpdateFile(f, checksum)

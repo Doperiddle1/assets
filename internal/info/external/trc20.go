@@ -7,8 +7,11 @@ import (
 
 	"fmt"
 	"net/url"
+ copilot/fix-security-issues-plan
+
 
 	"github.com/trustwallet/assets-go-libs/http"
+ master
  master
 )
 
@@ -23,6 +26,12 @@ type TRC20TokensResponse struct {
 }
 
 func GetTokenInfoForTRC20(tokenID string) (*TokenInfo, error) {
+ copilot/fix-security-issues-plan
+	url := fmt.Sprintf(trc20APIURL, url.PathEscape(tokenID))
+
+	var res TRC20TokensResponse
+	err := getHTTPResponse(url, &res)
+
  copilot/fix-security-issues
 	apiURL := "https://apilist.tronscan.io/api/token_trc20?contract=" + url.QueryEscape(tokenID)
 
@@ -33,6 +42,7 @@ func GetTokenInfoForTRC20(tokenID string) (*TokenInfo, error) {
 
 	var res TRC20TokensResponse
 	err := http.GetHTTPResponse(apiURL, &res)
+ master
 	if err != nil {
  master
 		return nil, err

@@ -31,9 +31,12 @@ fmt:
 	gofmt -w ${GOFMT_FILES}
 
 lint-install:
-ifeq (,$(wildcard test -f bin/golangci-lint))
+ifeq (,$(wildcard bin/golangci-lint))
 	@echo "  >  Installing golint"
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- v1.50.1
+	curl -sSfL -o /tmp/golangci-lint-install.sh \
+		https://raw.githubusercontent.com/golangci/golangci-lint/v1.50.1/install.sh
+	sh /tmp/golangci-lint-install.sh -b bin v1.50.1
+	rm -f /tmp/golangci-lint-install.sh
 endif
 
 lint: lint-install

@@ -3,10 +3,13 @@ package external
 import (
 	"fmt"
 	"net/url"
+ copilot/fix-security-issues-plan
+
  copilot/fix-security-issues
 
 
 	"github.com/trustwallet/assets-go-libs/http"
+ master
  master
 )
 
@@ -20,6 +23,12 @@ type Data struct {
 }
 
 func GetTokenInfoForSPL(tokenID string) (*TokenInfo, error) {
+ copilot/fix-security-issues-plan
+	url := fmt.Sprintf(splAPIURL, url.PathEscape(tokenID))
+
+	var result TokenInfoSPL
+	err := getHTTPResponse(url, &result)
+
  copilot/fix-security-issues
 	apiURL := "https://public-api.solscan.io/token/holders?tokenAddress=" + url.QueryEscape(tokenID)
 
@@ -30,6 +39,7 @@ func GetTokenInfoForSPL(tokenID string) (*TokenInfo, error) {
 
 	var result TokenInfoSPL
 	err := http.GetHTTPResponse(apiURL, &result)
+ master
 	if err != nil {
  master
 		return nil, err
