@@ -3,6 +3,7 @@ package external
 import (
 	"errors"
 	"fmt"
+	"net/url"
 )
 
 const trc20APIURL = "https://apilist.tronscan.io/api/token_trc20?contract=%s"
@@ -16,7 +17,7 @@ type TRC20TokensResponse struct {
 }
 
 func GetTokenInfoForTRC20(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(trc20APIURL, tokenID)
+	url := fmt.Sprintf(trc20APIURL, url.PathEscape(tokenID))
 
 	var res TRC20TokensResponse
 	err := getHTTPResponse(url, &res)

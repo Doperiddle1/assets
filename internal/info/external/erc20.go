@@ -2,6 +2,7 @@ package external
 
 import (
 	"fmt"
+	"net/url"
 	"strconv"
 )
 
@@ -13,7 +14,7 @@ type TokenInfoERC20 struct {
 }
 
 func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(ethAPIURL, tokenID)
+	url := fmt.Sprintf(ethAPIURL, url.PathEscape(tokenID))
 
 	var result TokenInfoERC20
 	err := getHTTPResponse(url, &result)

@@ -2,6 +2,7 @@ package external
 
 import (
 	"fmt"
+	"net/url"
 )
 
 const splAPIURL = "https://public-api.solscan.io/token/holders?tokenAddress=%s"
@@ -16,7 +17,7 @@ type Data struct {
 }
 
 func GetTokenInfoForSPL(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(splAPIURL, tokenID)
+	url := fmt.Sprintf(splAPIURL, url.PathEscape(tokenID))
 
 	var result TokenInfoSPL
 	err := getHTTPResponse(url, &result)
