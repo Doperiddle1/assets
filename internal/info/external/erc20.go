@@ -2,11 +2,10 @@ package external
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 	"strconv"
 )
-
-const ethAPIURL = "https://api.ethplorer.io/getTokenInfo/%s?apiKey=%s"
 
 // ethplorerAPIKeyEnv is the environment variable used to override the default
 // Ethplorer API key. When unset, the rate-limited public "freekey" is used.
@@ -26,10 +25,11 @@ type TokenInfoERC20 struct {
 }
 
 func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(ethAPIURL, tokenID, ethplorerAPIKey())
+	apiURL := fmt.Sprintf("https://api.ethplorer.io/getTokenInfo/%s?apiKey=%s",
+		url.PathEscape(tokenID), url.QueryEscape(ethplorerAPIKey()))
 
 	var result TokenInfoERC20
-	if err := getJSON(url, &result); err != nil {
+	if err := getJSON(apiURL, &result); err != nil {
 		return nil, err
 	}
 

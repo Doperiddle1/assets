@@ -1,6 +1,7 @@
 package external
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -75,7 +76,15 @@ func doGetJSON(url string, result interface{}) error {
 }
 
 func doGetBytes(url string) ([]byte, error) {
-	resp, err := httpClient.Get(url) //nolint:noctx
+	ctx, cancel := context.WithTimeout(context.Background(), httpTimeout)
+	defer cancel()
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create request: %w", err)
+	}
+
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to make GET request: %w", err)
 	}
