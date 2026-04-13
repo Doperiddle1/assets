@@ -2,10 +2,14 @@ package external
 
 import (
 	"errors"
+ copilot/fix-security-issues
+	"net/url"
+
 	"fmt"
 	"net/url"
 
 	"github.com/trustwallet/assets-go-libs/http"
+ master
 )
 
 const trc10APIURL = "https://apilist.tronscan.io/api/token?id=%s"
@@ -19,11 +23,18 @@ type TRC10TokensResponse struct {
 }
 
 func GetTokenInfoForTRC10(tokenID string) (*TokenInfo, error) {
+ copilot/fix-security-issues
+	apiURL := "https://apilist.tronscan.io/api/token?id=" + url.QueryEscape(tokenID)
+
+	var res TRC10TokensResponse
+	if err := getJSON(apiURL, &res); err != nil {
+
 	apiURL := fmt.Sprintf(trc10APIURL, url.QueryEscape(tokenID))
 
 	var res TRC10TokensResponse
 	err := http.GetHTTPResponse(apiURL, &res)
 	if err != nil {
+ master
 		return nil, err
 	}
 

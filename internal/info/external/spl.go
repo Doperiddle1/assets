@@ -3,11 +3,12 @@ package external
 import (
 	"fmt"
 	"net/url"
+ copilot/fix-security-issues
+
 
 	"github.com/trustwallet/assets-go-libs/http"
+ master
 )
-
-const splAPIURL = "https://public-api.solscan.io/token/holders?tokenAddress=%s"
 
 type TokenInfoSPL struct {
 	Data         []Data `json:"data"`
@@ -19,11 +20,18 @@ type Data struct {
 }
 
 func GetTokenInfoForSPL(tokenID string) (*TokenInfo, error) {
+ copilot/fix-security-issues
+	apiURL := "https://public-api.solscan.io/token/holders?tokenAddress=" + url.QueryEscape(tokenID)
+
+	var result TokenInfoSPL
+	if err := getJSON(apiURL, &result); err != nil {
+
 	apiURL := fmt.Sprintf(splAPIURL, url.QueryEscape(tokenID))
 
 	var result TokenInfoSPL
 	err := http.GetHTTPResponse(apiURL, &result)
 	if err != nil {
+ master
 		return nil, err
 	}
 

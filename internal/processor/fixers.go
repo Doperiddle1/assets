@@ -38,15 +38,23 @@ func (s *Service) FixETHAddressChecksum(f *file.AssetFile) error {
 
 		newName := path.GetAssetPath(f.Chain().Handle, checksum)
 
+		log.WithField("from", assetDir).
+			WithField("to", checksum).
+			Debug("Renaming asset to correct checksum")
+
 		if e = os.Rename(f.Path(), newName); e != nil {
-			return fmt.Errorf("failed to rename dir: %s", e)
+			return fmt.Errorf("failed to rename dir from %s to %s: %s", f.Path(), newName, e)
+		}
+
+		if _, e = os.Stat(newName); e != nil {
+			return fmt.Errorf("rename appeared to succeed but destination %s not found: %s", newName, e)
 		}
 
 		s.fileService.UpdateFile(f, checksum)
 
 		log.WithField("from", assetDir).
 			WithField("to", checksum).
-			Debug("Renamed asset")
+			Info("Renamed asset to correct checksum")
 	}
 
 	return nil

@@ -3,12 +3,24 @@ package external
 import (
 	"fmt"
 	"net/url"
-	"strconv"
+ copilot/fix-security-issues
+	"os"
 
-	"github.com/trustwallet/assets-go-libs/http"
+ master
+	"strconv"
 )
 
-const ethAPIURL = "https://api.ethplorer.io/getTokenInfo/%s?apiKey=freekey"
+// ethplorerAPIKeyEnv is the environment variable used to override the default
+// Ethplorer API key. When unset, the rate-limited public "freekey" is used.
+const ethplorerAPIKeyEnv = "ETHPLORER_API_KEY"
+
+func ethplorerAPIKey() string {
+	if key := os.Getenv(ethplorerAPIKeyEnv); key != "" {
+		return key
+	}
+
+	return "freekey"
+}
 
 // maxTokenDecimals is the maximum number of decimal places a valid token can have.
 const maxTokenDecimals = 30
@@ -19,11 +31,19 @@ type TokenInfoERC20 struct {
 }
 
 func GetTokenInfoForERC20(tokenID string) (*TokenInfo, error) {
+ copilot/fix-security-issues
+	apiURL := fmt.Sprintf("https://api.ethplorer.io/getTokenInfo/%s?apiKey=%s",
+		url.PathEscape(tokenID), url.QueryEscape(ethplorerAPIKey()))
+
+	var result TokenInfoERC20
+	if err := getJSON(apiURL, &result); err != nil {
+
 	apiURL := fmt.Sprintf(ethAPIURL, url.PathEscape(tokenID))
 
 	var result TokenInfoERC20
 	err := http.GetHTTPResponse(apiURL, &result)
 	if err != nil {
+ master
 		return nil, err
 	}
 

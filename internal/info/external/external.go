@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/trustwallet/assets-go-libs/http"
 )
 
 var (
@@ -23,10 +21,21 @@ type TokenInfo struct {
 }
 
 func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
+	escapedID := url.PathEscape(tokenID)
+
 	switch strings.ToLower(tokentType) {
 	case "erc20":
 		return GetTokenInfoForERC20(tokenID)
 	case "bep20":
+ copilot/fix-security-issues
+		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", escapedID))
+	case "fantom":
+		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", escapedID))
+	case "polygon":
+		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", escapedID))
+	case "avalanche":
+		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", escapedID))
+
 		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", url.PathEscape(tokenID)))
 	case "fantom":
 		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", url.PathEscape(tokenID)))
@@ -34,6 +43,7 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", url.PathEscape(tokenID)))
 	case "avalanche":
 		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", url.PathEscape(tokenID)))
+ master
 	case "spl":
 		return GetTokenInfoForSPL(tokenID)
 	case "trc20":
@@ -46,7 +56,7 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 }
 
 func GetTokenInfoByScraping(url string) (*TokenInfo, error) {
-	data, err := http.GetHTTPResponseBytes(url)
+	data, err := getBytes(url)
 	if err != nil {
 		return nil, err
 	}
