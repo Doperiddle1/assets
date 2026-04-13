@@ -3,8 +3,6 @@ package external
 import (
 	"errors"
 	"fmt"
-
-	"github.com/trustwallet/assets-go-libs/http"
 )
 
 const trc20APIURL = "https://apilist.tronscan.io/api/token_trc20?contract=%s"
@@ -21,8 +19,7 @@ func GetTokenInfoForTRC20(tokenID string) (*TokenInfo, error) {
 	url := fmt.Sprintf(trc20APIURL, tokenID)
 
 	var res TRC20TokensResponse
-	err := http.GetHTTPResponse(url, &res)
-	if err != nil {
+	if err := getJSON(url, &res); err != nil {
 		return nil, err
 	}
 

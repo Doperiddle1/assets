@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/trustwallet/assets-go-libs/http"
 )
 
 var (
@@ -45,7 +43,7 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 }
 
 func GetTokenInfoByScraping(url string) (*TokenInfo, error) {
-	data, err := http.GetHTTPResponseBytes(url)
+	data, err := getBytes(url)
 	if err != nil {
 		return nil, err
 	}
