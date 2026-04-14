@@ -2,6 +2,7 @@ package external
 
 import (
 	"fmt"
+	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
@@ -29,6 +30,8 @@ type TokenInfo struct {
 }
 
 func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
+	escapedID := url.PathEscape(tokenID)
+
 	switch strings.ToLower(tokentType) {
 	case "erc20":
 		if !evmAddressRegexp.MatchString(tokenID) {
@@ -39,22 +42,22 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 		if !evmAddressRegexp.MatchString(tokenID) {
 			return nil, fmt.Errorf("invalid BEP20 token address: %q", tokenID)
 		}
-		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", escapedID))
 	case "fantom":
 		if !evmAddressRegexp.MatchString(tokenID) {
 			return nil, fmt.Errorf("invalid Fantom token address: %q", tokenID)
 		}
-		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", escapedID))
 	case "polygon":
 		if !evmAddressRegexp.MatchString(tokenID) {
 			return nil, fmt.Errorf("invalid Polygon token address: %q", tokenID)
 		}
-		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", escapedID))
 	case "avalanche":
 		if !evmAddressRegexp.MatchString(tokenID) {
 			return nil, fmt.Errorf("invalid Avalanche token address: %q", tokenID)
 		}
-		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", tokenID))
+		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", escapedID))
 	case "spl":
 		if !splAddressRegexp.MatchString(tokenID) {
 			return nil, fmt.Errorf("invalid SPL token address: %q", tokenID)

@@ -2,6 +2,7 @@ package info
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	str "github.com/trustwallet/assets-go-libs/strings"
@@ -9,6 +10,9 @@ import (
 	"github.com/trustwallet/go-primitives/coin"
 	"github.com/trustwallet/go-primitives/types"
 )
+
+// htmlTagRegexp matches any HTML/XML tag to detect injection attempts.
+var htmlTagRegexp = regexp.MustCompile(`<[^>]+>`) //nolint:gochecknoglobals
 
 // Asset info specific validators.
 
@@ -203,6 +207,10 @@ func ValidateStatus(status string) error {
 func ValidateDescription(description string) error {
 	if len(description) > 600 {
 		return fmt.Errorf("%w: invalid length for description field", validation.ErrInvalidField)
+	}
+
+	if htmlTagRegexp.MatchString(description) {
+		return fmt.Errorf("%w: description contains HTML tags", validation.ErrInvalidField)
 	}
 
 	for _, ch := range whiteSpaceCharacters {

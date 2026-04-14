@@ -2,10 +2,8 @@ package external
 
 import (
 	"errors"
-	"fmt"
+	"net/url"
 )
-
-const trc10APIURL = "https://apilist.tronscan.io/api/token?id=%s"
 
 type TRC10TokensResponse struct {
 	Data []struct {
@@ -16,11 +14,10 @@ type TRC10TokensResponse struct {
 }
 
 func GetTokenInfoForTRC10(tokenID string) (*TokenInfo, error) {
-	url := fmt.Sprintf(trc10APIURL, tokenID)
+	apiURL := "https://apilist.tronscan.io/api/token?id=" + url.QueryEscape(tokenID)
 
 	var res TRC10TokensResponse
-	err := getJSON(url, &res)
-	if err != nil {
+	if err := getJSON(apiURL, &res); err != nil {
 		return nil, err
 	}
 
