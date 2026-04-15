@@ -1,32 +1,17 @@
 package external
 
 import (
- copilot/fix-security-issues-plan
-	"encoding/json"
-	"fmt"
-	"io"
 	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"math"
- master
 	"net/http"
 	"time"
 )
 
- copilot/fix-security-issues-plan
-const requestTimeout = 30 * time.Second
-
-var httpClient = &http.Client{
-	Timeout: requestTimeout,
-}
-
-func getHTTPResponse(url string, result interface{}) error {
-	bodyBytes, err := getHTTPResponseBytes(url)
-
 const (
-	httpTimeout    = 10 * time.Second
+	httpTimeout    = 15 * time.Second
 	maxRetries     = 3
 	retryBaseDelay = 500 * time.Millisecond
 )
@@ -79,26 +64,16 @@ func getBytes(url string) ([]byte, error) {
 
 func doGetJSON(url string, result interface{}) error {
 	data, err := doGetBytes(url)
- master
 	if err != nil {
 		return err
 	}
 
- copilot/fix-security-issues-plan
-	err = json.Unmarshal(bodyBytes, result)
-	if err != nil {
-
 	if err = json.Unmarshal(data, result); err != nil {
- master
 		return fmt.Errorf("failed to unmarshal json: %w", err)
 	}
 
 	return nil
 }
-
- copilot/fix-security-issues-plan
-func getHTTPResponseBytes(url string) ([]byte, error) {
-	resp, err := httpClient.Get(url) //nolint:noctx
 
 func doGetBytes(url string) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), httpTimeout)
@@ -110,7 +85,6 @@ func doGetBytes(url string) ([]byte, error) {
 	}
 
 	resp, err := httpClient.Do(req)
- master
 	if err != nil {
 		return nil, fmt.Errorf("failed to make GET request: %w", err)
 	}
@@ -120,18 +94,10 @@ func doGetBytes(url string) ([]byte, error) {
 		return nil, fmt.Errorf("unsuccessful status code: %d", resp.StatusCode)
 	}
 
- copilot/fix-security-issues-plan
-	bodyBytes, err := io.ReadAll(resp.Body)
-
 	body, err := io.ReadAll(resp.Body)
- master
 	if err != nil {
 		return nil, fmt.Errorf("failed to read body: %w", err)
 	}
 
- copilot/fix-security-issues-plan
-	return bodyBytes, nil
-
 	return body, nil
- master
 }

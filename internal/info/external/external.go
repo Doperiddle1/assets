@@ -12,6 +12,15 @@ var (
 	holdersRegexp  = regexp.MustCompile(`(\d+)\saddresses`)
 	decimalsRegexp = regexp.MustCompile(`(\d+)\s+<\/div>`)
 	symbolRegexp   = regexp.MustCompile(`<b>(\w+)<\/b>\s<span`)
+
+	// evmAddressRegexp matches a standard 0x-prefixed EVM address (20 bytes, hex).
+	evmAddressRegexp = regexp.MustCompile(`^0x[0-9a-fA-F]{40}$`)
+	// trc20AddressRegexp matches a TRON address (base58, starts with T, 34 chars).
+	trc20AddressRegexp = regexp.MustCompile(`^T[1-9A-HJ-NP-Za-km-z]{33}$`)
+	// trc10IDRegexp matches a TRON TRC10 numeric token ID.
+	trc10IDRegexp = regexp.MustCompile(`^\d+$`)
+	// splAddressRegexp matches a Solana base58 public key (32 bytes → 43–44 base58 chars).
+	splAddressRegexp = regexp.MustCompile(`^[1-9A-HJ-NP-Za-km-z]{43,44}$`)
 )
 
 type TokenInfo struct {
@@ -25,36 +34,44 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 
 	switch strings.ToLower(tokentType) {
 	case "erc20":
+		if !evmAddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid ERC20 token address: %q", tokenID)
+		}
 		return GetTokenInfoForERC20(tokenID)
 	case "bep20":
- copilot/fix-security-issues-plan
-
- copilot/fix-security-issues
+		if !evmAddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid BEP20 token address: %q", tokenID)
+		}
 		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", escapedID))
 	case "fantom":
+		if !evmAddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid Fantom token address: %q", tokenID)
+		}
 		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", escapedID))
 	case "polygon":
+		if !evmAddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid Polygon token address: %q", tokenID)
+		}
 		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", escapedID))
 	case "avalanche":
+		if !evmAddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid Avalanche token address: %q", tokenID)
+		}
 		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", escapedID))
-
- master
-		return GetTokenInfoByScraping(fmt.Sprintf("https://bscscan.com/token/%s", url.PathEscape(tokenID)))
-	case "fantom":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://ftmscan.com/token/%s", url.PathEscape(tokenID)))
-	case "polygon":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://polygonscan.com/token/%s", url.PathEscape(tokenID)))
-	case "avalanche":
-		return GetTokenInfoByScraping(fmt.Sprintf("https://snowtrace.io/token/%s", url.PathEscape(tokenID)))
- copilot/fix-security-issues-plan
-
- master
- master
 	case "spl":
+		if !splAddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid SPL token address: %q", tokenID)
+		}
 		return GetTokenInfoForSPL(tokenID)
 	case "trc20":
+		if !trc20AddressRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid TRC20 token address: %q", tokenID)
+		}
 		return GetTokenInfoForTRC20(tokenID)
 	case "trc10":
+		if !trc10IDRegexp.MatchString(tokenID) {
+			return nil, fmt.Errorf("invalid TRC10 token ID: %q", tokenID)
+		}
 		return GetTokenInfoForTRC10(tokenID)
 	}
 
@@ -62,11 +79,7 @@ func GetTokenInfo(tokenID, tokentType string) (*TokenInfo, error) {
 }
 
 func GetTokenInfoByScraping(url string) (*TokenInfo, error) {
- copilot/fix-security-issues-plan
-	data, err := getHTTPResponseBytes(url)
-
 	data, err := getBytes(url)
- master
 	if err != nil {
 		return nil, err
 	}
