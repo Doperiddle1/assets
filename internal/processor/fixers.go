@@ -2,6 +2,7 @@ package processor
 
 import (
 	"fmt"
+	imgpng "image/png"
 	"os"
 	"path/filepath"
 	"strings"
@@ -85,11 +86,39 @@ func (s *Service) FixLogo(f *file.AssetFile) error {
 	}
 
 	err = validation.ValidateLogoFileSize(f.Path())
-	if err != nil { //nolint:staticcheck
-		// TODO: Compress images.
+	if err != nil {
+		log.WithField("path", f.Path()).Debug("Compressing oversized image")
+
+		if compErr := compressPNG(f.Path()); compErr != nil {
+			return fmt.Errorf("failed to compress image: %w", compErr)
+		}
 	}
 
 	return nil
+}
+
+// compressPNG re-encodes a PNG file using the best compression level to reduce its size.
+func compressPNG(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return fmt.Errorf("failed to open file: %w", err)
+	}
+
+	img, err := imgpng.Decode(f)
+	f.Close() // Close the reader before overwriting the same file.
+	if err != nil {
+		return fmt.Errorf("failed to decode image: %w", err)
+	}
+
+	out, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("failed to create file: %w", err)
+	}
+	defer out.Close()
+
+	encoder := imgpng.Encoder{CompressionLevel: imgpng.BestCompression}
+
+	return encoder.Encode(out, img)
 }
 
 func calculateTargetDimension(width, height int) (targetW, targetH int) {
